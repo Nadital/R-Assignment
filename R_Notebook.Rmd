@@ -1,0 +1,137 @@
+---
+title: "R Notebook - Assignment"
+output: html_notebook
+---
+
+This is the R Notebook for the R assignment. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+```{r}
+
+```
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+
+START INFORMATION FROM HERE:
+
+First I downloaded the files needed for the assignment:
+
+```{r}
+fang <- read.table("https://raw.githubusercontent.com/EEOB-BioData/BCB546X-fall2017/master/UNIX_Assignment/fang_et_al_genotypes.txt", sep = "\t", header = TRUE, na.strings = "?/?", stringsAsFactors = FALSE)
+```
+```{r}
+snp.pos <- read.table("https://raw.githubusercontent.com/EEOB-BioData/BCB546X-Fall2017/master/UNIX_Assignment/snp_position.txt", sep = "\t", header = TRUE, na.strings = "?/?", stringsAsFactors = FALSE)
+```
+
+This allowed me to download the file, indicate that the files were tab delimited, there are headers in the first row, replaced any ?/? with NA, and prevented the automatic conversion of character strings to factors
+
+Next, I viewed the data to take a quick look that all the data had downloaded correctly:
+
+```{r}
+View(fang)
+View(snp.pos)
+```
+
+I then examine the structure and dimension of the fang et al files:
+```{r}
+typeof(fang)
+class(fang)
+ncol(fang)
+nrow(fang)
+
+```
+I examine the structure and dimensions of the snp position files:
+
+```{r}
+typeof(snp.pos)
+class(snp.pos)
+ncol(snp.pos)
+nrow(snp.pos)
+```
+
+I filter out the maize files from the fang et al file, first by creating a vector with the maize group IDs, then pulling the rows with those IDs into a new file. I then view the files to verify:
+
+```{r}
+maize_snp_id <- c("ZMMIL", "ZMMLR", "ZMMMR")
+maize_snps <- fang[fang$Group %in% maize_snp_id, ]
+View(maize_snps)
+
+```
+
+I also filter out the teosinte files with the same process. First by creating a vector with the group IDs, then pulling the rows with those IDs into a new file, followed by a view to verify:
+```{r}
+teosinte_snp_id <- c("ZMPBA", "ZMPIL", "ZMPJA")
+teosinte_snps <- fang[fang$Group %in% teosinte_snp_id, ]
+View(teosinte_snps)
+```
+
+Then I transposed the genotype data in order to join the two dataframes:
+```{r}
+transp_maize_snps <- t(maize_snps)
+transp_teo_snps <- t(teosinte_snps)
+```
+I then review the transposed data:
+```{r}
+View(transp_maize_snps)
+View(transp_teo_snps)
+typeof(transp_maize_snps)
+class(transp_maize_snps)
+typeof(transp_teo_snps)
+class(transp_teo_snps)
+```
+
+The transposed data vector was converted to characters/matrix, when as listed above, it should be list/data.frame. Therefore, I converted the transposed data into a dataframe, with a list type:
+
+```{r}
+df_trns_maize_snps <- as.data.frame(transp_maize_snps, stringsAsFactors = FALSE)
+df_trns_teo_snps <- as.data.frame(transp_teo_snps, stringsAsFactors = FALSE)
+```
+I then reviewed the dataframe'd transposed data:
+
+```{r}
+View(df_trns_maize_snps)
+View(df_trns_teo_snps)
+typeof(df_trns_maize_snps)
+class(df_trns_maize_snps)
+typeof(df_trns_teo_snps)
+class(df_trns_teo_snps)
+```
+With the values in the correct vector, I then merged the data frames together:
+
+```{r}
+merged_mz_data <-merge.data.frame(snp.pos, df_trns_maize_snps, by.x = "SNP_ID", by.y="row.names")
+merged_teo_data <- merge.data.frame(snp.pos,df_trns_teo_snps, by.x = "SNP_ID", by.y = "row.names")
+View(merged_mz_data)
+View(merged_teo_data)
+ncol(merged_mz_data)
+ncol(merged_teo_data)
+```
+Now that the data has been merged, the files need to be ordered in the following order:
+
+Column 1: SNP_ID  (currently column 1)
+Column 2: Chromosome (currently column 3)
+Column 3: Position (currently column 4)
+Subsq col: all other genotype data (columns )
+
+So I reordered the columsn in the following order:
+
+maize: 1, 3, 4, 16-1588
+teosinte: 1, 3, 4, 16-990
+
+Omitting columns 2 and 5-15 as non-genotype data and thus not needed.
+```{r}
+ord_mz_data <- merged_mz_data[,c(1,3,4,16:1588)]
+ord_teo_data <- merged_teo_data[, c(1,3,4,16:990)]
+View(ord_mz_data)
+View(ord_teo_data)
+```
+
+Now that the files are in the correct column order, I can pull the files with the requested data:``
+
+```{r}
+
+```
+
