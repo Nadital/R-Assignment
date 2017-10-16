@@ -274,6 +274,14 @@ HeZygG_mz <- filter(melt_zygos_mz, SNPs== "G/A" | SNPs== "G/C" | SNPs== "G/T")
 HeZygA_mz <- filter(melt_zygos_mz, SNPs== "A/G" | SNPs== "A/C" | SNPs== "A/T")
 HeZygT_mz <- filter(melt_zygos_mz, SNPs== "T/G" | SNPs== "T/A" | SNPs== "T/C")
 Missing_mz <- filter(melt_zygos_mz, SNPs== "NA")
+
+HoZyg_teo <- filter(melt_zygos_teo, SNPs== "A/A" | SNPs== "C/C" | SNPs== "G/G" | SNPs== "T/T")
+HeZygC_teo <- filter(melt_zygos_teo, SNPs== "C/G" | SNPs== "C/A" | SNPs== "C/T")
+HeZygG_teo <- filter(melt_zygos_teo, SNPs== "G/A" | SNPs== "G/C" | SNPs== "G/T")
+HeZygA_teo <- filter(melt_zygos_teo, SNPs== "A/G" | SNPs== "A/C" | SNPs== "A/T")
+HeZygT_teo <- filter(melt_zygos_teo, SNPs== "T/G" | SNPs== "T/A" | SNPs== "T/C")
+Missing_teo <- filter(melt_zygos_teo, SNPs== "NA")
+
 ```
 
 
