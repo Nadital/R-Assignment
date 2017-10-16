@@ -21,6 +21,7 @@ snp_pos <- read.table("https://raw.githubusercontent.com/EEOB-BioData/BCB546X-Fa
 
 This allowed me to download the file, indicate that the files were tab delimited, there are headers in the first row, replaced any ?/? with NA, and prevented the automatic conversion of character strings to factors
 
+
 Next, I viewed the data to take a quick look that all the data had downloaded correctly:
 
 ```{r}
@@ -163,9 +164,9 @@ So now that they are in a format that can be ordered, I'm going to order them in
 
 ```{r}
 ord_maize_inc <- ord_mz_data_ques[order(ord_mz_data_ques$Position, decreasing=FALSE),]
-ord_maize_dec <- ord_mz_data_dash[order(ord_mz_data_dash$Position, decreasing=FALSE),]
+ord_maize_dec <- ord_mz_data_dash[order(ord_mz_data_dash$Position, decreasing=TRUE),]
 ord_teo_inc <- ord_teo_data_ques[order(ord_teo_data_ques$Position, decreasing=FALSE),]
-ord_teo_dec <- ord_teo_data_dash[order(ord_teo_data_dash$Position, decreasing=FALSE),]
+ord_teo_dec <- ord_teo_data_dash[order(ord_teo_data_dash$Position, decreasing=TRUE),]
 ```
 Next can subset them into the appropriate chromosomes, first with increasing position and ? for missing data:
 
@@ -239,9 +240,9 @@ Now I visualize the data by plot. First for the maize data:
 tally_mz_SPC <- melt_mz_snp_per_chrom %>% count(Chromosome)
 Maize_Chromsome_No <- tally_mz_SPC$Chromosome
 Maize_Total_SNPs <- tally_mz_SPC$n
-plot(Maize_Chromsome_No,Maize_Total_SNPs, xlab="Maize Chromosome No", ylab = "Total SNPs")
+plot(Maize_Chromsome_No,Maize_Total_SNPs, xlab="Maize Chromosome_No", ylab = "Total SNPs")
 ```
-
+**Plot was working previously, as can be see in the plot imgs in GitHub. Chromosome column still present.**
 
 Based on the plot above, for the maize, chromosome 1 contributed the most of these SNPs
 
@@ -253,6 +254,7 @@ Teosinte_Chromsome_No <- tally_teo_SPC$Chromosome
 Teosinte_Total_SNPs <- tally_teo_SPC$n
 plot(Teosinte_Chromsome_No, Teosinte_Total_SNPs,  xlab="Teosinte Chromosome No", ylab="Total SNPs")
 ```
+**Same error as above, please see saved plot in GitHub**
 
 Based on the plot above, for the teosinte, chromosome 1 contributed the most of these SNPs.
 
@@ -265,7 +267,39 @@ melt_zygos_mz <- melt(zygos_mz, id.vars = c("Sample_ID","Group"),  variable.name
 melt_zygos_teo <- melt(zygos_teo, id.vars = c("Sample_ID", "Group"), variable.name = "SNP column", na.rm = FALSE, value.name = "SNPs", factorsAsStrings = TRUE)
 ```
 
-Next, I created a new files to indicate whether a site was homozygous or heterozygous, as well as any missing data that is coded as NA.
+
+Next I created new files to indicate whether a site was homozygous or heterozygous, as well as any missing data that is coded as NA. 
+
+First I created the melted files:
+
+```{r}
+genotypes = colnames(fang)[-c(1:3)]
+melt_geno = melt(fang, measure.vars = genotypes)
+melt_geno[melt_geno == "?/?" ] = NA
+
+```
+
+Then I broke out the genotypes that were homozygous, heterozygous, or NA:
+
+```{r}
+
+SNPS_HoZ <- c("A/A", "C/C", "T/T", "G/G")
+melt_geno$HoZ = (melt_geno$value=="A/A" | melt_geno$value=="C/C" | melt_geno$value=="T/T" | melt_geno$value=="G/G")
+ordered_melt_geno <- melt_geno[, c(1,3,5,6)]
+
+geno_ID = melt_geno[order(melt_geno$Sample_ID),]
+geno_Group = melt_geno[order(melt_geno$Group), ]
+Amt_per_ID = ddply(geno_ID, c("Sample_ID"), summarise, Homozygous=sum(HoZ, na.rm=TRUE), Heterozygous=sum(!HoZ, na.rm=TRUE), Missing=sum(is.na(HoZ)))
+```
+
+Then created the plot for the comparison of Heterozygosity, Homozygosity, and Missing
+```{r}
+melt_Amt_per_ID = melt(Amt_per_ID, measure.vars = c("Homozygous", "Heterozygous", "Missing"))
+ggplot(melt_Amt_per_ID, aes(x = Sample_ID, y=value, fill = variable)) + geom_bar(stat = "identity", position = "stack")
+```
+
+
+Next, I created new files to indicate whether a site was homozygous or heterozygous, as well as any missing data that is coded as NA, this time broken out by individual SNP combinations.
 
 ```{r}
 SNPS_HoZ <- c("A/A", "C/C", "T/T", "G/G")
@@ -274,14 +308,18 @@ HeZygC_mz <- filter(melt_zygos_mz, SNPs== "C/G" | SNPs== "C/A" | SNPs== "C/T")
 HeZygG_mz <- filter(melt_zygos_mz, SNPs== "G/A" | SNPs== "G/C" | SNPs== "G/T")
 HeZygA_mz <- filter(melt_zygos_mz, SNPs== "A/G" | SNPs== "A/C" | SNPs== "A/T")
 HeZygT_mz <- filter(melt_zygos_mz, SNPs== "T/G" | SNPs== "T/A" | SNPs== "T/C")
-Missing_mz <- filter(melt_zygos_mz, SNPs== "NA")
+
+Missing_mz <- replace(melt_zygos_mz, is.na(melt_zygos_mz), "N/A")
+Missing_mz <- filter(melt_zygos_mz, SNPs== "N/A")
 
 HoZyg_teo <- filter(melt_zygos_teo, SNPs== "A/A" | SNPs== "C/C" | SNPs== "G/G" | SNPs== "T/T")
 HeZygC_teo <- filter(melt_zygos_teo, SNPs== "C/G" | SNPs== "C/A" | SNPs== "C/T")
 HeZygG_teo <- filter(melt_zygos_teo, SNPs== "G/A" | SNPs== "G/C" | SNPs== "G/T")
 HeZygA_teo <- filter(melt_zygos_teo, SNPs== "A/G" | SNPs== "A/C" | SNPs== "A/T")
 HeZygT_teo <- filter(melt_zygos_teo, SNPs== "T/G" | SNPs== "T/A" | SNPs== "T/C")
-Missing_teo <- filter(melt_zygos_teo, SNPs== "NA")
+
+Missing_teo <- replace(melt_zygos_teo, is.na(melt_zygos_teo), "N/A")
+Missing_teo <- filter(melt_zygos_teo, SNPs== "N/A")
 
 ```
 
