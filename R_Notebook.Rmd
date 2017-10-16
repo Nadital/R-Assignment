@@ -1,14 +1,10 @@
----
-title: "R Notebook - Assignment"
-output: html_notebook
----
-
 This is the R Notebook for the R assignment. 
 
+General Notes: 
 When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
 
 
-START INFORMATION FROM HERE:
+#Part One: Data Inspection
 
 First I downloaded the files needed for the assignment:
 
@@ -45,6 +41,7 @@ class(snp_pos)
 ncol(snp_pos)
 nrow(snp_pos)
 ```
+#Part One: Data Processing
 
 I filter out the maize files from the fang et al file, first by creating a vector with the maize group IDs, then pulling the rows with those IDs into a new file. I then view the files to verify:
 
@@ -220,7 +217,56 @@ Chr9_teo_dec <- subset(ord_teo_dec, Chromosome=="9")
 Chr10_teo_dec <- subset(ord_teo_dec, Chromosome=="10")
 
 ```
+To record the actual files to GitHub:
 
+```{r}
+
+write.csv(Chr1_maize_inc, file = "Chr1_maize_inc.csv")
+write.csv(Chr2_maize_inc, file = "Chr2_maize_inc.csv")
+write.csv(Chr3_maize_inc, file = "Chr3_maize_inc.csv")
+write.csv(Chr4_maize_inc, file = "Chr4_maize_inc.csv")
+write.csv(Chr5_maize_inc, file = "Chr5_maize_inc.csv")
+write.csv(Chr6_maize_inc, file = "Chr6_maize_inc.csv")
+write.csv(Chr7_maize_inc, file = "Chr7_maize_inc.csv")
+write.csv(Chr8_maize_inc, file = "Chr8_maize_inc.csv")
+write.csv(Chr9_maize_inc, file = "Chr9_maize_inc.csv") 
+write.csv(Chr10_maize_inc, file = "Chr10_maize_inc.csv")
+
+write.csv(Chr1_teo_inc, file = "Chr1_teo_inc.csv")
+write.csv(Chr2_teo_inc, file = "Chr2_teo_inc.csv")
+write.csv(Chr3_teo_inc, file = "Chr3_teo_inc.csv")
+write.csv(Chr4_teo_inc, file = "Chr4_teo_inc.csv")
+write.csv(Chr5_teo_inc, file = "Chr5_teo_inc.csv")
+write.csv(Chr6_teo_inc, file = "Chr6_teo_inc.csv")
+write.csv(Chr7_teo_inc, file = "Chr7_teo_inc.csv")
+write.csv(Chr8_teo_inc, file = "Chr8_teo_inc.csv")
+write.csv(Chr9_teo_inc, file = "Chr9_teo_inc.csv")
+write.csv(Chr10_teo_inc, file = "Chr10_teo_inc.csv")
+
+write.csv(Chr1_maize_dec, file = "Chr1_maize_dec.csv")
+write.csv(Chr2_maize_dec, file = "Chr2_maize_dec.csv")
+write.csv(Chr3_maize_dec, file = "Chr3_maize_dec.csv")
+write.csv(Chr4_maize_dec, file = "Chr4_maize_dec.csv")
+write.csv(Chr5_maize_dec, file = "Chr5_maize_dec.csv")
+write.csv(Chr6_maize_dec, file = "Chr6_maize_dec.csv")
+write.csv(Chr7_maize_dec, file = "Chr7_maize_dec.csv")
+write.csv(Chr8_maize_dec, file = "Chr8_maize_dec.csv")
+write.csv(Chr9_maize_dec, file = "Chr9_maize_dec.csv")
+write.csv(Chr10_maize_dec, file = "Chr10_maize_dec.csv")
+
+write.csv(Chr1_teo_dec, file = "Chr1_teo_dec.csv")
+write.csv(Chr2_teo_dec, file = "Chr2_teo_dec.csv")
+write.csv(Chr3_teo_dec, file = "Chr3_teo_dec.csv")
+write.csv(Chr4_teo_dec, file = "Chr4_teo_dec.csv")
+write.csv(Chr5_teo_dec, file = "Chr5_teo_dec.csv")
+write.csv(Chr6_teo_dec, file = "Chr6_teo_dec.csv")
+write.csv(Chr7_teo_dec, file = "Chr7_teo_dec.csv")
+write.csv(Chr8_teo_dec, file = "Chr8_teo_dec.csv")
+write.csv(Chr9_teo_dec, file = "Chr9_teo_dec.csv")
+write.csv(Chr10_teo_dec, file = "Chr10_teo_dec.csv")
+```
+
+#Part Two: SNPs per Chromosome
 
 To visualize the data, I sort out unneeded columns and used melt to tidy up the data:
 
@@ -258,6 +304,8 @@ plot(Teosinte_Chromsome_No, Teosinte_Total_SNPs,  xlab="Teosinte Chromosome No",
 
 Based on the plot above, for the teosinte, chromosome 1 contributed the most of these SNPs.
 
+
+#Part Two: Missing Data and Amt of Heterozygosity
 
 Next, I create, sort and melt the maize and teosinte snps files, in order to tidy up for additional visualizations:
 ```{r}
@@ -298,6 +346,7 @@ melt_Amt_per_ID = melt(Amt_per_ID, measure.vars = c("Homozygous", "Heterozygous"
 ggplot(melt_Amt_per_ID, aes(x = Sample_ID, y=value, fill = variable)) + geom_bar(stat = "identity", position = "stack")
 ```
 
+#Part Two: Own Visualization
 
 Next, I created new files to indicate whether a site was homozygous or heterozygous, as well as any missing data that is coded as NA, this time broken out by individual SNP combinations.
 
@@ -323,7 +372,7 @@ Missing_teo <- filter(melt_zygos_teo, SNPs== "N/A")
 
 ```
 
-I usedd rbind() to combine all the rows into a single file. 
+I used rbind() to combine all the rows into a single file. 
 
 ```{r}
 Tally_HoZyg_mz <- HoZyg_mz %>% count(SNPs)
