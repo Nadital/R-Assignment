@@ -273,7 +273,7 @@ HeZygC_mz <- filter(melt_zygos_mz, SNPs== "C/G" | SNPs== "C/A" | SNPs== "C/T")
 HeZygG_mz <- filter(melt_zygos_mz, SNPs== "G/A" | SNPs== "G/C" | SNPs== "G/T")
 HeZygA_mz <- filter(melt_zygos_mz, SNPs== "A/G" | SNPs== "A/C" | SNPs== "A/T")
 HeZygT_mz <- filter(melt_zygos_mz, SNPs== "T/G" | SNPs== "T/A" | SNPs== "T/C")
-
+Missing_mz <- filter(melt_zygos_mz, SNPs== "NA")
 ```
 
 
