@@ -55,7 +55,7 @@ View(maize_snps)
 I also filter out the teosinte files with the same process. First by creating a vector with the group IDs, then pulling the rows with those IDs into a new file, followed by a view to verify:
 ```{r}
 teosinte_snps <- filter(fang, Group== "ZMPBA" | Group== "ZMPIL" | Group== "ZMPJA")
-View(teosinte_snps)
+View(maize_snps)
 ```
 
 Then I transposed the genotype data in order to join the two dataframes:
@@ -136,36 +136,124 @@ class(ord_mz_data$Position)
 typeof(ord_mz_data$Chromosome)
 class(ord_mz_data$Chromosome)
 ```
-Therefore, I needed to convert these to doubles:
+Therefore, I needed to convert both to factors:
 
 ```{r}
-ord_mz_data$Position <- as.factor(ord_mz_data$Position)
 ord_mz_data$Chromosome <- as.factor(ord_mz_data$Chromosome)
-ord_teo_data$Position <- as.factor(ord_teo_data$Position)
+ord_mz_data$Position <- as.factor(ord_mz_data$Position)
 ord_teo_data$Chromosome <- as.factor(ord_teo_data$Chromosome)
+ord_teo_data$Position <- as.factor(ord_teo_data$Position)
+class(ord_mz_data$Position)
+class(ord_mz_data$Chromosome)
+class(ord_teo_data$Position)
+class(ord_teo_data$Chromosome)
+
 ```
+
+Now that they are in factors, I will make four files, two with question marks for the missing files and two with dashes:
+
 ```{r}
-typeof(ord_mz_data$Position)
-typeof(ord_mz_data$Chromosome)
-typeof(ord_teo_data$Position)
-typeof(ord_teo_data$Chromosome)
+ord_mz_data_ques <- replace(ord_mz_data, is.na(ord_mz_data), "?")
+ord_teo_data_ques <- replace(ord_teo_data, is.na(ord_teo_data), "?")
+ord_mz_data_dash <- replace(ord_mz_data, is.na(ord_mz_data), "-")
+ord_teo_data_dash <- replace(ord_teo_data, is.na(ord_teo_data),"-")
+```
+
+So now that they are in a format that can be ordered, I'm going to order them in increasing and decreasing position.
+
+```{r}
+ord_maize_inc <- ord_mz_data_ques[order(ord_mz_data_ques$Position, decreasing=FALSE),]
+ord_maize_dec <- ord_mz_data_dash[order(ord_mz_data_dash$Position, decreasing=FALSE),]
+ord_teo_inc <- ord_teo_data_ques[order(ord_teo_data_ques$Position, decreasing=FALSE),]
+ord_teo_dec <- ord_teo_data_dash[order(ord_teo_data_dash$Position, decreasing=FALSE),]
+```
+Next can subset them into the appropriate chromosomes, first with increasing position and ? for missing data:
+
+```{r}
+Chr1_maize_inc <- subset(ord_maize_inc, Chromosome=="1")
+Chr2_maize_inc <- subset(ord_maize_inc, Chromosome=="2")
+Chr3_maize_inc <- subset(ord_maize_inc, Chromosome=="3")
+Chr4_maize_inc <- subset(ord_maize_inc, Chromosome=="4")
+Chr5_maize_inc <- subset(ord_maize_inc, Chromosome=="5")
+Chr6_maize_inc <- subset(ord_maize_inc, Chromosome=="6")
+Chr7_maize_inc <- subset(ord_maize_inc, Chromosome=="7")
+Chr8_maize_inc <- subset(ord_maize_inc, Chromosome=="8")
+Chr9_maize_inc <- subset(ord_maize_inc, Chromosome=="9")
+Chr10_maize_inc <- subset(ord_maize_inc, Chromosome=="10")
+
+Chr1_teo_inc <- subset(ord_teo_inc, Chromosome=="1")
+Chr2_teo_inc <- subset(ord_teo_inc, Chromosome=="2")
+Chr3_teo_inc <- subset(ord_teo_inc, Chromosome=="3")
+Chr4_teo_inc <- subset(ord_teo_inc, Chromosome=="4")
+Chr5_teo_inc <- subset(ord_teo_inc, Chromosome=="5")
+Chr6_teo_inc <- subset(ord_teo_inc, Chromosome=="6")
+Chr7_teo_inc <- subset(ord_teo_inc, Chromosome=="7")
+Chr8_teo_inc <- subset(ord_teo_inc, Chromosome=="8")
+Chr9_teo_inc <- subset(ord_teo_inc, Chromosome=="9")
+Chr10_teo_inc <- subset(ord_teo_inc, Chromosome=="10")
+```
+
+Finally, I can subset them with decreasing position and - for missing data:
+
+```{r}
+Chr1_maize_dec <- subset(ord_maize_dec, Chromosome=="1")
+Chr2_maize_dec <- subset(ord_maize_dec, Chromosome=="2")
+Chr3_maize_dec <- subset(ord_maize_dec, Chromosome=="3")
+Chr4_maize_dec <- subset(ord_maize_dec, Chromosome=="4")
+Chr5_maize_dec <- subset(ord_maize_dec, Chromosome=="5")
+Chr6_maize_dec <- subset(ord_maize_dec, Chromosome=="6")
+Chr7_maize_dec <- subset(ord_maize_dec, Chromosome=="7")
+Chr8_maize_dec <- subset(ord_maize_dec, Chromosome=="8")
+Chr9_maize_dec <- subset(ord_maize_dec, Chromosome=="9")
+Chr10_maize_dec <- subset(ord_maize_dec, Chromosome=="10")
+
+Chr1_teo_dec <- subset(ord_teo_dec, Chromosome=="1")
+Chr2_teo_dec <- subset(ord_teo_dec, Chromosome=="2")
+Chr3_teo_dec <- subset(ord_teo_dec, Chromosome=="3")
+Chr4_teo_dec <- subset(ord_teo_dec, Chromosome=="4")
+Chr5_teo_dec <- subset(ord_teo_dec, Chromosome=="5")
+Chr6_teo_dec <- subset(ord_teo_dec, Chromosome=="6")
+Chr7_teo_dec <- subset(ord_teo_dec, Chromosome=="7")
+Chr8_teo_dec <- subset(ord_teo_dec, Chromosome=="8")
+Chr9_teo_dec <- subset(ord_teo_dec, Chromosome=="9")
+Chr10_teo_dec <- subset(ord_teo_dec, Chromosome=="10")
+
 ```
 
 
-So I'm going to attempt to order them in increasing position with the missing data coded as "?":
+To visualize the data, I sort out unneeded columns and used melt to tidy up the data:
 
 ```{r}
-ord_mz_data_inc <- arrange(ord_mz_data, Position)
-ord_teo_data_inc <- arrange(ord_teo_data, Position)
-ord_mz_data_dec <- arrange(ord_mz_data, desc(Position))
-ord_teo_data_dec <- arrange(ord_teo_data, desc(Position))
-View(ord_mz_data_inc)
-View(ord_teo_data_inc)
-View(ord_mz_data_dec)
-View(ord_teo_data_dec)
+ncol(ord_mz_data)
+ncol(ord_teo_data)
+mz_snp_per_chrom <- ord_mz_data[, c(2, 4:1576)]
+teo_snp_per_chrom <- ord_teo_data[, c(2,4:978)]
+melt_mz_snp_per_chrom <- melt(mz_snp_per_chrom, id.vars = "Chromosome", variable.name = "SNP column", na.rm = TRUE, value.name = "SNPs", factorsAsStrings = TRUE)
+melt_teo_snp_per_chrom <- melt(teo_snp_per_chrom, id.vars = "Chromosome", variable.name = "SNP column", na.rm = TRUE, value.name = "SNPs", factorsAsStrings = TRUE)
+
 ```
+Now I visualize the data by plot. First for the maize data: 
+
 ```{r}
-typeof(ord_mz_data_dec$Chromosome)
-typeof(ord_mz_data_dec$Position)
+
+tally_mz_SPC <- melt_mz_snp_per_chrom %>% count(Chromosome)
+Maize_Chromsome_No <- tally_mz_SPC$Chromosome
+Maize_Total_SNPs <- tally_mz_SPC$n
+plot(Maize_Chromsome_No, Maize_Total_SNPs)
 ```
+
+
+
+Based on the plot above, for the maize, chromosome 1 contributed the most of these SNPs
+
+Next I visualize the plot for teosinte:
+
+```{r}
+tally_teo_SPC <- melt_teo_snp_per_chrom %>% count(Chromosome)
+Teosinte_Chromsome_No <- tally_teo_SPC$Chromosome
+Teosinte_Total_SNPs <- tally_teo_SPC$n
+plot(Teosinte_Chromsome_No, Teosinte_Total_SNPs)
+```
+
+Based on the plot above, for the teosinte, chromosome 1 contributed the most of these SNPs.
 
