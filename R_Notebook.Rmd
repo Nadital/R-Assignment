@@ -5,13 +5,6 @@ output: html_notebook
 
 This is the R Notebook for the R assignment. 
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
-
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
-```{r}
-
-```
-
 When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
 
 
@@ -23,7 +16,7 @@ First I downloaded the files needed for the assignment:
 fang <- read.table("https://raw.githubusercontent.com/EEOB-BioData/BCB546X-fall2017/master/UNIX_Assignment/fang_et_al_genotypes.txt", sep = "\t", header = TRUE, na.strings = "?/?", stringsAsFactors = FALSE)
 ```
 ```{r}
-snp.pos <- read.table("https://raw.githubusercontent.com/EEOB-BioData/BCB546X-Fall2017/master/UNIX_Assignment/snp_position.txt", sep = "\t", header = TRUE, na.strings = "?/?", stringsAsFactors = FALSE)
+snp_pos <- read.table("https://raw.githubusercontent.com/EEOB-BioData/BCB546X-Fall2017/master/UNIX_Assignment/snp_position.txt", sep = "\t", header = TRUE, na.strings = "?/?", stringsAsFactors = FALSE)
 ```
 
 This allowed me to download the file, indicate that the files were tab delimited, there are headers in the first row, replaced any ?/? with NA, and prevented the automatic conversion of character strings to factors
@@ -32,7 +25,7 @@ Next, I viewed the data to take a quick look that all the data had downloaded co
 
 ```{r}
 View(fang)
-View(snp.pos)
+View(snp_pos)
 ```
 
 I then examine the structure and dimension of the fang et al files:
@@ -46,25 +39,22 @@ nrow(fang)
 I examine the structure and dimensions of the snp position files:
 
 ```{r}
-typeof(snp.pos)
-class(snp.pos)
-ncol(snp.pos)
-nrow(snp.pos)
+typeof(snp_pos)
+class(snp_pos)
+ncol(snp_pos)
+nrow(snp_pos)
 ```
 
 I filter out the maize files from the fang et al file, first by creating a vector with the maize group IDs, then pulling the rows with those IDs into a new file. I then view the files to verify:
 
 ```{r}
-maize_snp_id <- c("ZMMIL", "ZMMLR", "ZMMMR")
-maize_snps <- fang[fang$Group %in% maize_snp_id, ]
+maize_snps <- filter(fang, Group== "ZMMIL" | Group=="ZMMLR" | Group== "ZMMMR")
 View(maize_snps)
-
 ```
 
 I also filter out the teosinte files with the same process. First by creating a vector with the group IDs, then pulling the rows with those IDs into a new file, followed by a view to verify:
 ```{r}
-teosinte_snp_id <- c("ZMPBA", "ZMPIL", "ZMPJA")
-teosinte_snps <- fang[fang$Group %in% teosinte_snp_id, ]
+teosinte_snps <- filter(fang, Group== "ZMPBA" | Group== "ZMPIL" | Group== "ZMPJA")
 View(teosinte_snps)
 ```
 
@@ -103,15 +93,14 @@ class(df_trns_teo_snps)
 With the values in the correct vector, I then merged the data frames together
 
 ```{r}
-merged_mz_data <-merge.data.frame(snp.pos, df_trns_maize_snps, by.x = "SNP_ID", by.y="row.names")
-merged_teo_data <- merge.data.frame(snp.pos,df_trns_teo_snps, by.x = "SNP_ID", by.y = "row.names")
+merged_mz_data <- merge.data.frame(snp_pos, df_trns_maize_snps, by.x = 1, by.y = 0)
+merged_teo_data <- merge.data.frame(snp_pos, df_trns_teo_snps, by.x = 1, by.y = 0)
 View(merged_mz_data)
 View(merged_teo_data)
 ncol(merged_mz_data)
 ncol(merged_teo_data)
 typeof(merged_mz_data)
 class(merged_mz_data)
-
 ```
 
 
@@ -147,19 +136,36 @@ class(ord_mz_data$Position)
 typeof(ord_mz_data$Chromosome)
 class(ord_mz_data$Chromosome)
 ```
-Therefore,  I needed to convert these to doubles:
+Therefore, I needed to convert these to doubles:
 
 ```{r}
-as.factor(ord_mz_data$Position)
-as.factor(ord_mz_data$Chromosome)
-
+ord_mz_data$Position <- as.factor(ord_mz_data$Position)
+ord_mz_data$Chromosome <- as.factor(ord_mz_data$Chromosome)
+ord_teo_data$Position <- as.factor(ord_teo_data$Position)
+ord_teo_data$Chromosome <- as.factor(ord_teo_data$Chromosome)
+```
+```{r}
+typeof(ord_mz_data$Position)
+typeof(ord_mz_data$Chromosome)
+typeof(ord_teo_data$Position)
+typeof(ord_teo_data$Chromosome)
 ```
 
-```
-It's not working, so I'm going to move on, and will alter the code above if I can ever figure it out.
 
 So I'm going to attempt to order them in increasing position with the missing data coded as "?":
-```{r}
 
+```{r}
+ord_mz_data_inc <- arrange(ord_mz_data, Position)
+ord_teo_data_inc <- arrange(ord_teo_data, Position)
+ord_mz_data_dec <- arrange(ord_mz_data, desc(Position))
+ord_teo_data_dec <- arrange(ord_teo_data, desc(Position))
+View(ord_mz_data_inc)
+View(ord_teo_data_inc)
+View(ord_mz_data_dec)
+View(ord_teo_data_dec)
+```
+```{r}
+typeof(ord_mz_data_dec$Chromosome)
+typeof(ord_mz_data_dec$Position)
 ```
 
