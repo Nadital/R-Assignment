@@ -1,0 +1,20 @@
+---
+title: "McNinch_Review_for_Naditz"
+author: "Colton McNinch"
+date: "10/17/2017"
+output: pdf_document
+---
+
+Overall, I thought the code was written well. So much detail was placed in the comments
+which made it easy to follow what each step in the process was. I only had a 
+few troubles with different packages conflicting (highlighted below) which were
+easy to resolve. Graphs looked good, and I presume would become even better with 
+a little more time. 
+
+Some notes I thought to add:
+  1.) awesome job making a reproducible example by downloading the data sets from the
+      internet
+  1.) adding a list of packages to load would be beneficial as some functions
+      can be over-ruled if someone has two packages with functions of the same name
+      ... in your code the `filter` function is used in the dplyr package as well as in the 
+      stats package

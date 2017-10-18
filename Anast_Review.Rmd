@@ -1,0 +1,8 @@
+---
+title: "Justin's review"
+author: "Justin ANast"
+date: "October 16, 2017"
+output: html_document
+---
+
+Looks good, I just had to load the librarys. Your code was very robust, observations looked close to mine. Up intil the plots we looked very simmialar. If I was grading it I would give you a 15/15. Nice job.
