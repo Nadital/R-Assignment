@@ -271,6 +271,11 @@ write.csv(Chr10_teo_dec, file = "Chr10_teo_dec.csv")
 To visualize the data, I sort out unneeded columns and used melt to tidy up the data:
 
 ```{r}
+
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+
 ncol(ord_mz_data)
 ncol(ord_teo_data)
 mz_snp_per_chrom <- ord_mz_data[, c(2,4:1576)]
@@ -344,6 +349,7 @@ Then created the plot for the comparison of Heterozygosity, Homozygosity, and Mi
 ```{r}
 melt_Amt_per_ID = melt(Amt_per_ID, measure.vars = c("Homozygous", "Heterozygous", "Missing"))
 ggplot(melt_Amt_per_ID, aes(x = Sample_ID, y=value, fill = variable)) + geom_bar(stat = "identity", position = "stack")
+ggsave("melt_Amt_per_ID", plot = last_plot(), device = png)
 ```
 
 # Part Two: Own Visualization
@@ -402,6 +408,7 @@ colnames(Zygosity_Maize) <- c("Maize_SNPs", "Maize_SNP_counts")
 colnames(Zygosity_Teosinte) <- c("Teosinte_SNPs", "Teosinte_SNP_counts")
 
 ggplot(Zygosity_Maize) + geom_col(aes(x=Maize_SNPs, y=Maize_SNP_counts))
+ggsave("Zygosity_Maize", plot = last_plot(), device = png)
 
 ```
 
@@ -409,6 +416,7 @@ And the Teosinte Zygosity Counts:
 
 ```{r}
 ggplot(Zygosity_Teosinte) + geom_col(aes(x=Teosinte_SNPs, y=Teosinte_SNP_counts))
+ggsave("Zygosity_Teosiinte", plot = last_plot(), device = png)
 ```
 
  
